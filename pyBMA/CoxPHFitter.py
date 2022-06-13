@@ -47,12 +47,7 @@ class CoxPHFitter:
         self.duration_col = duration_col
         self.event_col = event_col
 
-        if priors is None:
-            # If no given prior choose an uniformative one
-            self.priors = [0.5] * (len(self.df.columns) - 2)
-        else:
-            self.priors = priors
-
+        self.priors = [0.5] * (len(self.df.columns) - 2) if priors is None else priors
         self.reference_loglik = None
 
         # Create a baseline model using all covariates.
@@ -96,16 +91,14 @@ class CoxPHFitter:
     def _generate_model_definnitions(self):
         names, coefs, var = self.full_model.summary()
         variance_covariance = inv(-self.full_model._cf._hessian_)
-        all_models = []
-        for i in range(1, len(names)):
-            all_models.append(list(combinations(names, i)))
+        all_models = [list(combinations(names, i)) for i in range(1, len(names))]
         all_models = [list(item) for sublist in all_models for item in sublist]
         return all_models
 
     def _generate_posteriors_from_bic(self, bics):
         self.posterior_probabilities = []
         min_bic = min(bics)
-        summation = sum([exp(-0.5 * (bic - min_bic)) for bic in bics])
+        summation = sum(exp(-0.5 * (bic - min_bic)) for bic in bics)
         for bic in bics:
             posterior = (exp(-0.5 * (bic - min_bic))) / summation
             self.posterior_probabilities.append(posterior)
