@@ -10,7 +10,7 @@ class CoxPHModel:
         self.cens_col = cens_col
 
         all_covariate_columns = [col for col in df.columns if col not in [cens_col, survival_col]]
-        if covariate_names == None:
+        if covariate_names is None:
             self.covariate_names = all_covariate_columns
         else:
             self.covariate_names = covariate_names
@@ -18,7 +18,7 @@ class CoxPHModel:
 
         self.mask = [x in self.covariate_names for x in all_covariate_columns]
         self._cf = None
-        if reference_loglik == None:
+        if reference_loglik is None:
             reference_loglik = self.loglik()
         self.reference_loglik = reference_loglik
 
